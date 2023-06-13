@@ -3,3 +3,6 @@ https://www.tutorialspoint.com/access-index-of-last-element-in-pandas-dataframe-
 
 # Creating a list of dictionaries:
 https://stackoverflow.com/questions/11492656/creating-a-list-of-dictionaries-results-in-a-list-of-copies-of-the-same-dictiona
+
+#Using .label in sqlalchemy queries
+https://stackoverflow.com/questions/45461954/use-of-label-in-sqlalchemy-database-orm
