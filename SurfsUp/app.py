@@ -42,6 +42,7 @@ def Homepage():
         f"/api/v1.0/precipitation<br/>"
         f"/api/v1.0/stations<br/>"
         f"/api/v1.0/tobs<br/>"
+        f"/api/v1.0/<start><br/>"
         f"/api/v1.0/<start>/<end>"
 
     )
@@ -103,6 +104,28 @@ def temps():
     #close session
     session.close()
 
+@app.route("/api/v1.0/<start>")
+def temp_dates_start(start):
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
+     # Set Start and end Dates
+
+    #Query the dates and temperature observations of the most-active station for the previous year of data.
+    #find Min, max, avg from each date
+    most_active = session.query(Measurement.date,\
+    func.min(Measurement.tobs).label('TMIN'),
+    func.avg(Measurement.tobs).label('TAVG'),
+    func.max(Measurement.tobs).label('TMAX'))\
+    .filter(Measurement.date >= start).all()
+    #extract query data
+    temps_list_start = [{'start_date': start, 'TMIN': row.TMIN,'TAVG': row.TAVG, 'TMAX': row.TMAX} for row in most_active]
+    #Convert python object into json object
+    json_list_start = json.dumps(temps_list_start)
+    #return JSON list
+    return jsonify(json_list_start)
+    #close session
+    session.close()
+
 @app.route("/api/v1.0/<start>/<end>")
 def temp_dates(start,end):
     # Create our session (link) from Python to the DB
@@ -117,7 +140,7 @@ def temp_dates(start,end):
     func.max(Measurement.tobs).label('TMAX'))\
     .filter(Measurement.date >= start, Measurement.date <= end).all()
     #extract query data
-    temps_list = [{'date': row.date, 'TMIN': row.TMIN,'TAVG': row.TAVG, 'TMAX': row.TMAX} for row in most_active]
+    temps_list = [{'start_date': start,'end_date': end, 'TMIN': row.TMIN,'TAVG': row.TAVG, 'TMAX': row.TMAX} for row in most_active]
     #Convert python object into json object
     json_list = json.dumps(temps_list)
     #return JSON list
